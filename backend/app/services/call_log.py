@@ -15,7 +15,7 @@ class CallLogService(BaseModuleService):
     ACTION_RULES = {"标记审计": "超时", "标记重试": "限流拒绝"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """标记审计时联动流水审计；标记重试时创建重放任务并检索引用追踪状态。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

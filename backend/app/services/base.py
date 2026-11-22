@@ -59,7 +59,13 @@ class BaseModuleService:
         rows.append(entry)
         return entry, []
 
-    def run_action(self, entry_id: int, action: str) -> tuple[dict[str, Any] | None, str]:
+    def run_action(
+        self,
+        entry_id: int,
+        action: str,
+        action_id: str | None = None,
+    ) -> tuple[dict[str, Any] | None, str]:
+        """执行状态流转动作；action_id 是调用方带来的动作标识，供需要幂等联动的子类使用。"""
         entry = store.find(self.MODULE, entry_id)
         if entry is None:
             return None, f"{self.ENTITY} {entry_id} 不存在或已归档"

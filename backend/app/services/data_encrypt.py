@@ -15,7 +15,7 @@ class DataEncryptService(BaseModuleService):
     ACTION_RULES = {"启用加密": "已启用", "更新证书": "已更新", "标记过期": "证书过期"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """启用加密时检查鉴权方案链和写调用日志；证书过期时发治理报告和告警订阅方。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

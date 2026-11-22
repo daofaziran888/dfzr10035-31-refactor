@@ -15,7 +15,7 @@ class DataVersionService(BaseModuleService):
     ACTION_RULES = {"创建快照": "可用", "标注版本": "标注中", "废弃版本": "已废弃"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """创建快照时同步投递管道和订阅方；标注版本时联动治理报告；废弃版本时审计。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

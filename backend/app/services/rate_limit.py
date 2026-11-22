@@ -15,7 +15,7 @@ class RateLimitService(BaseModuleService):
     ACTION_RULES = {"启效策略": "生效中", "手动熔断": "已熔断", "确认恢复": "已恢复"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """启效策略时检查关联端点监控状态；已熔断时联动创建重放任务和写入调用日志。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

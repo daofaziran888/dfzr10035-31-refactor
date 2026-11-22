@@ -15,7 +15,7 @@ class CostAccountService(BaseModuleService):
     ACTION_RULES = {"启动核算": "已核算", "确认账单": "超额告警", "标记超额": "已确认"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """启动核算时从调用日志和提供方SLA拉取用量；确认账单时审计；超额时联动治理报告和重采。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

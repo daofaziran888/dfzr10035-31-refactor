@@ -29,3 +29,5 @@ class EntryPayload(BaseModel):
 class ActionPayload(BaseModel):
     action: str
     remark: str | None = None
+    # 动作标识：调用方为一次动作分配的唯一标识，用于回执丢失后的幂等重试。
+    action_id: str | None = None

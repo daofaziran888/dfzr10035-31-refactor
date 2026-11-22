@@ -15,7 +15,7 @@ class PipelineAuditService(BaseModuleService):
     ACTION_RULES = {"提交复核": "待复核", "确认通过": "已通过", "驳回记录": "已驳回"}
     NEGATIVE_ACTIONS = ["驳回记录"]
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """待复核时联动治理报告和调用日志；确认通过时创建数据版本；驳回时记录治理项。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

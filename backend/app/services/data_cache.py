@@ -15,7 +15,7 @@ class DataCacheService(BaseModuleService):
     ACTION_RULES = {"启效缓存": "生效中", "强制刷新": "容量告警", "停用缓存": "已停用"}
     NEGATIVE_ACTIONS = ["停用缓存"]
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """启效缓存时同步投递管道；强制刷新时通知订阅方；停用缓存时更新Schema差异。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

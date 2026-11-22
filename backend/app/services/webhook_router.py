@@ -15,7 +15,7 @@ class WebhookRouterService(BaseModuleService):
     ACTION_RULES = {"启用规则": "已启用", "手动重发": "投递失败", "停用规则": "已停用"}
     NEGATIVE_ACTIONS = ["停用规则"]
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """启用时通知订阅方并写审计日志；投递失败时创建重放任务；停用时更新订阅状态。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

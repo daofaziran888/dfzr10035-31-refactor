@@ -15,7 +15,7 @@ class IncrTrackerService(BaseModuleService):
     ACTION_RULES = {"初始化游标": "追踪中", "启动追踪": "已追上", "标记异常": "追踪异常"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """初始化游标时写调用日志；追踪中时联动重放队列挂钩；异常时触发治理报告。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

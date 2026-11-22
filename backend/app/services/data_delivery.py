@@ -15,7 +15,7 @@ class DataDeliveryService(BaseModuleService):
     ACTION_RULES = {"启动投递": "投递中", "暂停投递": "已完成", "标记异常": "投递异常"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """投递中时通知订阅方并记日志；完成时创建数据版本；异常时触发治理报告。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

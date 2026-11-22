@@ -15,7 +15,7 @@ class TaskScheduleService(BaseModuleService):
     ACTION_RULES = {"激活计划": "执行中", "立即执行": "已完成", "停用计划": "已停用"}
     NEGATIVE_ACTIONS = ["停用计划"]
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """激活计划时创建调用批次和增量追踪挂钩；立即执行时写日志和更新版本；停用时审计。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from app.services.base import BaseModuleService
+from app.services.schema_diff import file_schema_diff
 from app.store import store
 
 
@@ -15,18 +16,18 @@ class EndpointDefService(BaseModuleService):
     ACTION_RULES = {"提交联调": "联调中", "投产发布": "已投产", "标记变更": "Schema变更"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """投产发布时联动创建响应解析规则和Schema差异记录；Schema变更时通知缓存刷新。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:
             return entry, message
         if action == "投产发布":
             self._create_parse_rule(entry)
-            self._create_schema_diff(entry, "initial")
+            self._create_schema_diff(entry, "initial", action_id=action_id)
             self._sync_rate_limit_creation(entry)
             message += "，已联动创建解析规则/Schema记录/限流策略"
         elif action == "标记变更":
-            self._create_schema_diff(entry, "upgrade")
+            self._create_schema_diff(entry, "upgrade", action_id=action_id)
             self._notify_cache_refresh(entry)
             message += "，已记录Schema差异并通知缓存刷新"
         return entry, message
@@ -48,21 +49,22 @@ class EndpointDefService(BaseModuleService):
             "status": "草稿", "pending": True, "abnormal": False,
         })
 
-    def _create_schema_diff(self, endpoint: dict, reason: str):
-        diff_rows = store.rows("schema_diff")
+    def _create_schema_diff(self, endpoint: dict, reason: str, action_id: str | None = None):
+        """端点变化转Schema差异：与启效规则复用共同的建档口径，动作标识幂等。"""
         eid = str(endpoint["id"]).zfill(4)
-        diff_rows.append({
-            "id": max((int(r.get("id", 0)) for r in diff_rows), default=0) + 1,
-            "记录编号": f"SCHE-{endpoint['端点编号']}",
-            "关联端点": endpoint["端点编号"],
-            "变更字段": "responseSchema" if reason == "upgrade" else "initialSchema",
-            "旧定义": endpoint.get("响应Schema", "") if reason == "upgrade" else "",
-            "新定义": endpoint.get("响应Schema", "") if reason == "initial" else "upgraded",
-            "差异等级": "MAJOR" if reason == "upgrade" else "INFO",
-            "影响评估": f"端点{eid}投产{'变更' if reason == 'upgrade' else '初始化'}",
-            "检测时间": "2026-11-17",
-            "status": "已检测", "pending": True, "abnormal": reason == "upgrade",
-        })
+        file_schema_diff(
+            number=f"SCHE-{endpoint['端点编号']}",
+            endpoint=endpoint["端点编号"],
+            field="responseSchema" if reason == "upgrade" else "initialSchema",
+            old=endpoint.get("响应Schema", "") if reason == "upgrade" else "",
+            new=endpoint.get("响应Schema", "") if reason == "initial" else "upgraded",
+            level="MAJOR" if reason == "upgrade" else "INFO",
+            impact=f"端点{eid}投产{'变更' if reason == 'upgrade' else '初始化'}",
+            detected_at="2026-11-17",
+            abnormal=reason == "upgrade",
+            source=f"endpoint_def:{'投产发布' if reason == 'initial' else '标记变更'}",
+            action_id=action_id,
+        )
 
     def _sync_rate_limit_creation(self, endpoint: dict):
         """确保投产端点有关联限流策略。"""

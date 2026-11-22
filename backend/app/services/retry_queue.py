@@ -15,7 +15,7 @@ class RetryQueueService(BaseModuleService):
     ACTION_RULES = {"加入队列": "重试中", "手动重试": "已成功", "标记失败": "永久失败"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """重试中/已成功时联动写调用日志和更新监控；永久失败时触发告警。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

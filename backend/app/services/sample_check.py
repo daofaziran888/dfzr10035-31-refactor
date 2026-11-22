@@ -15,7 +15,7 @@ class SampleCheckService(BaseModuleService):
     ACTION_RULES = {"启动采样": "采样中", "确认通过": "已通过", "标记告警": "偏差告警"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """采样中时从调用日志取样并创建数据版本；确认通过时更新用量；告警时联动治理和重试。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

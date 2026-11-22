@@ -15,7 +15,7 @@ class GovernReportService(BaseModuleService):
     ACTION_RULES = {"生成报告": "已生成", "提交审核": "已审核", "归档报告": "已归档"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """生成报告时收集跨模块数据；审核时联动管道审计和调用日志。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:

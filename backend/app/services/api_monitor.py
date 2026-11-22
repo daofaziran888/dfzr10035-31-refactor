@@ -15,7 +15,7 @@ class ApiMonitorService(BaseModuleService):
     ACTION_RULES = {"启用监控": "监控中", "静默告警": "已告警", "废弃监控": "已静默"}
     NEGATIVE_ACTIONS = []
 
-    def run_action(self, entry_id: int, action: str):
+    def run_action(self, entry_id: int, action: str, action_id: str | None = None):
         """启用监控时采集调用日志统计；已告警时联动重放队列和治理报告。"""
         entry, message = super().run_action(entry_id, action)
         if entry is None:
